@@ -1,0 +1,56 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "verity"
+version = "0.1.0"
+description = "Privacy-first, explainable misinformation triage agent"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi==0.162.0",
+    "uvicorn[standard]==0.54.0",
+    "pydantic==2.14.1",
+    "streamlit==1.66.1",
+    "spacy==3.8.18",
+    "scikit-learn==1.9.1",
+    "pgmpy==1.1.2",
+    "langdetect==1.0.9",
+    "httpx==0.28.1",
+    "matplotlib==3.11.2",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest==9.2.0",
+    "ruff==0.17.3",
+    "mypy==2.4.1",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src", "."]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src", "tests", "ui", "eval", "scripts"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "ANN401"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+disallow_any_explicit = true
+mypy_path = "src"
+files = ["src/verity"]
+explicit_package_bases = true
+
+[[tool.mypy.overrides]]
+module = ["pgmpy.*", "langdetect.*", "sklearn.*", "spacy.*", "matplotlib.*", "networkx.*"]
+ignore_missing_imports = true
+follow_untyped_imports = true
