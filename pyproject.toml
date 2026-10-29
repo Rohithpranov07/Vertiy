@@ -54,3 +54,9 @@ explicit_package_bases = true
 module = ["pgmpy.*", "langdetect.*", "sklearn.*", "spacy.*", "matplotlib.*", "networkx.*"]
 ignore_missing_imports = true
 follow_untyped_imports = true
+
+# pydantic's BaseModel base classes contain Any; mypy reports it on every model
+# class line. Our own code in these modules still uses no Any.
+[[tool.mypy.overrides]]
+module = ["verity.schemas", "verity.config", "verity.db.models", "verity.api.*"]
+disallow_any_explicit = false
