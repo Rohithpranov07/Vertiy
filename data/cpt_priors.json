@@ -1,6 +1,6 @@
 {
   "source": "expert-prior-v0",
-  "status": "AWAITING HUMAN REVIEW: initial expert guesses, not measured values",
+  "status": "AWAITING HUMAN REVIEW: expert guesses, not measured values. Style cues kept weak so that tone, missing news coverage and missing details together cannot reach the verdict threshold without a fact-check or source signal.",
   "tables": {
     "source_cred": {
       "rationale": "Most forwarded messages carry no recognisable link; trusted and low sources are each a minority.",
@@ -49,41 +49,41 @@
       ]
     },
     "corroboration": {
-      "rationale": "Trusted outlets report true claims more often than false ones, but absence is only weak evidence. Columns: claim true, claim false.",
+      "rationale": "A matching trusted-outlet headline is strong evidence for a true claim; a missing one is weak evidence, because the headline index only holds recent news. Columns: claim true, claim false.",
       "values": [
         [
-          0.55,
-          0.15
+          0.3,
+          0.06
         ],
         [
-          0.45,
-          0.85
+          0.7,
+          0.94
         ]
       ]
     },
     "sensational": {
-      "rationale": "False claims read somewhat more alarmingly; this is a weak cue. Columns: claim true, claim false.",
+      "rationale": "False claims read slightly more alarmingly; a weak cue that must never decide a verdict alone. Columns: claim true, claim false.",
       "values": [
         [
-          0.35,
-          0.55
+          0.4,
+          0.5
         ],
         [
-          0.65,
-          0.45
+          0.6,
+          0.5
         ]
       ]
     },
     "specifics": {
-      "rationale": "True claims somewhat more often carry checkable details; a weak cue. Columns: claim true, claim false.",
+      "rationale": "True claims slightly more often carry checkable details; a weak cue that must never decide a verdict alone. Columns: claim true, claim false.",
       "values": [
         [
-          0.6,
-          0.4
+          0.55,
+          0.45
         ],
         [
-          0.4,
-          0.6
+          0.45,
+          0.55
         ]
       ]
     }

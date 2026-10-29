@@ -17,7 +17,9 @@ _ENGLISH_SHARE = 0.1  # share of words that are English function words
 _ENGLISH_WORDS = frozenset(
     "the of and to is was are for by from with that this on at it he she they will has have "
     "not be said as than but or who which its their his her were been after before over into "
-    "about during also more what when where how why".split()
+    "about during also more what when where how why against despite under between through while "
+    "because since until upon without within among across could would should might these those "
+    "there them your our new says say".split()
 )
 _SCRIPT_SHARE = 0.5  # share of letters in one script that decides the language
 

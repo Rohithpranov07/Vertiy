@@ -124,7 +124,7 @@ Defined in [.env.example](.env.example) and validated in [src/verity/config.py](
 | `DB_PATH`, `INDEX_DIR` | `./data/verity.db`, `./data/index` | storage |
 | `VERDICT_THRESHOLD` | 0.75 | confidence needed for a non-abstaining verdict |
 | `RETRIEVAL_TOP_K` | 5 | best-first candidates per index |
-| `FACTCHECK_MATCH_THRESHOLD`, `HEADLINE_MATCH_THRESHOLD`, `TONE_THRESHOLD` | 0.40 / 0.30 / 0.50 | fact-check threshold swept on held-out published fact-checks (0.30 let 3 of 411 weak matches call a true claim false; 0.40 with stop words removed gave none and more coverage). The other two are initial guesses; tune on the dev split, then freeze |
+| `FACTCHECK_MATCH_THRESHOLD`, `HEADLINE_MATCH_THRESHOLD`, `TONE_THRESHOLD` | 0.40 / 0.40 / 0.50 | fact-check threshold swept on held-out published fact-checks (0.30 let 3 of 411 weak matches call a true claim false; 0.40 with stop words removed gave none and more coverage). The headline threshold was set the same way (at 0.30, 8% of debunked claims matched an unrelated headline; at 0.40, 1.5%). The tone threshold is an initial guess; tune on the dev split, then freeze |
 | `MAX_MESSAGE_CHARS` | 5000 | input limit |
 | `RANDOM_SEED`, `LIKELIHOOD_WEIGHTING_SAMPLES` | 42, 5000 | determinism and sampling |
 | `SIMHASH_MAX_HAMMING` | 12 | D2 family threshold, swept on held-out fact-checks (14 added 30 matches, 3 of them wrong) |

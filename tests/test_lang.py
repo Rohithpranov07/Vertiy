@@ -98,3 +98,10 @@ def test_english_with_foreign_looking_names_is_accepted() -> None:
         detect_language(
             "Rastislav Iliev a Peter Visolajský hovoria o nebezpečenstve vakcín proti covidu"
         )
+
+
+def test_english_headline_with_connectives_is_accepted() -> None:
+    assert (
+        detect_language("Israel president urges against new vote despite inconclusive result")
+        == "en"
+    )

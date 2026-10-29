@@ -28,7 +28,7 @@ class Settings(BaseModel):
     verdict_threshold: float = Field(0.75, gt=0.5, le=1.0)
     retrieval_top_k: int = Field(5, ge=1)
     factcheck_match_threshold: float = Field(0.40, ge=0.0, le=1.0)
-    headline_match_threshold: float = Field(0.30, ge=0.0, le=1.0)
+    headline_match_threshold: float = Field(0.40, ge=0.0, le=1.0)
     tone_threshold: float = Field(0.50, ge=0.0, le=1.0)
     max_message_chars: int = Field(5000, ge=1)
     random_seed: int = 42
