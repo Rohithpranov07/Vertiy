@@ -1,0 +1,3 @@
+from verity.privacy import message_hash
+
+message_hash("plain str")

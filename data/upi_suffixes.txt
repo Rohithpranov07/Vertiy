@@ -1,0 +1,16 @@
+# UPI handle suffixes (the part after @). One per line; extend as needed.
+upi
+ybl
+ibl
+axl
+okaxis
+okhdfcbank
+okicici
+oksbi
+paytm
+apl
+sbi
+hdfcbank
+icici
+axisbank
+pnb
