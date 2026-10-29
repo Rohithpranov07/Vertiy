@@ -1,6 +1,6 @@
 PY ?= .venv/bin/python
 
-.PHONY: install lint typecheck test api ui demo
+.PHONY: install setup lint typecheck test api ui demo
 
 install:
 	python3.12 -m venv .venv
@@ -8,6 +8,9 @@ install:
 	$(PY) -m pip install -e ".[dev]"
 	$(PY) -m spacy download en_core_web_sm
 	$(PY) -m pip freeze --exclude-editable > requirements.lock
+
+setup:
+	$(PY) -m scripts.setup
 
 lint:
 	$(PY) -m ruff check .
@@ -25,5 +28,5 @@ api:
 ui:
 	$(PY) -m streamlit run ui/app.py --server.port 8501
 
-demo:
-	@echo "not yet implemented"
+demo: setup
+	$(PY) -m scripts.demo

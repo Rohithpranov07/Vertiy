@@ -1,0 +1,8 @@
+{
+  "_note": "Fill in after supplying the real demo messages. 'TODO' values are not checked.",
+  "1": {"verdict": "TODO", "redactions": "TODO", "note": "debunked forward with a phone number"},
+  "2": {"verdict": "TODO", "note": "alarmist, no fact-check: expected Unverified with a what-if hint"},
+  "3": {"verdict": "TODO", "note": "must land in the same rumour family as step 1"},
+  "4": {"verdict": "TODO", "note": "lookalike warning and source_cred = low"},
+  "5": {"verdict": "TODO", "note": "Tamil message; shows the translated claim when a provider is configured"}
+}
