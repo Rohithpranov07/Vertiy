@@ -156,6 +156,11 @@ python -m scripts.simulate_radar           # SIMULATED Radar data (not measured 
 
 Quality gates: `make lint && make typecheck && make test`.
 
+The UI follows a Nike-style design spec (flat, photography-first editorial look: display
+headlines, pill buttons, hairline rows, one soft gray). It uses local font stacks only (Futura or
+Helvetica families with fallbacks) so the browser makes no third-party font requests. Theme code is in
+[ui/components/theme.py](ui/components/theme.py) and [.streamlit/config.toml](.streamlit/config.toml).
+
 ## Degraded modes
 
 | Situation | Behaviour |

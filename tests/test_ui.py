@@ -105,9 +105,10 @@ def test_likely_false_screen(monkeypatch: pytest.MonkeyPatch) -> None:
     assert not at.exception
     shown = " ".join(m.value for m in at.markdown)
     assert "Likely false" in shown and "9%" in shown
-    assert any("Privacy shield removed 1 phone number" in i.value for i in at.info)
-    assert any("looks like thehindu.com" in w.value for w in at.warning)
-    assert any("Rumour family" in c.value and "edited copy" in c.value for c in at.caption)
+    assert "Privacy shield removed 1 phone number" in shown
+    assert "looks like thehindu.com" in shown and "Warning" in shown
+    assert "Rumour family" in shown and "edited copy" in shown
+    assert "Rated refuted" in shown and "-62 pts" in shown
     assert [b.label for b in at.button] == ["Check", "Yes", "No"]
 
 
@@ -125,7 +126,7 @@ def test_unverified_screen(monkeypatch: pytest.MonkeyPatch) -> None:
 )
 def test_error_screens(monkeypatch: pytest.MonkeyPatch, err: Exception, needle: str) -> None:
     at = run_app(monkeypatch, err)
-    assert any(needle in e.value for e in at.error)
+    assert needle in " ".join(m.value for m in at.markdown)
     assert not at.exception
 
 
@@ -137,4 +138,30 @@ def test_feedback_tap_calls_api(monkeypatch: pytest.MonkeyPatch) -> None:
     at = run_app(monkeypatch, record())
     next(b for b in at.button if b.label == "Yes").click().run()
     assert sent == [("hash123", "likely_false", "right")]
-    assert any("feedback was recorded" in s.value for s in at.success)
+    assert "feedback was recorded" in " ".join(m.value for m in at.markdown)
+
+
+def test_html_builders_escape_untrusted_text() -> None:
+    from components.format import claim_html, lookalike_text, matches_html, warning_html
+
+    evil = "<script>alert(1)</script>"
+    rec = record().model_copy(
+        update={
+            "matches": [
+                Match(publisher=evil, rating="refuted", url="javascript:alert(1)", similarity=0.5),
+                Match(
+                    publisher="ok",
+                    rating="refuted",
+                    url='http://x.example/"onmouseover="x',
+                    similarity=0.4,
+                ),
+            ]
+        }
+    )
+    out = (
+        matches_html(rec)
+        + claim_html(evil)
+        + warning_html(lookalike_text("lookalike", evil, evil, 1))
+    )
+    assert "<script>" not in out and "javascript:" not in out
+    assert 'href="http://x.example/&quot;onmouseover=&quot;x"' in out

@@ -59,18 +59,26 @@ def percent(p: float) -> str:
     return f"{round(p * 100)}%"
 
 
+DOT_COLORS: dict[VerdictLabel, str] = {  # semantic accents only: sale / neutral / success
+    "likely_false": "#d30005",
+    "unverified": "#9e9ea0",
+    "likely_true": "#007d48",
+}
+
+
 def verdict_card_html(record: VerdictRecord) -> str:
-    """HTML for the verdict card. Only enum-derived text and numbers go into the markup."""
-    bg, fg = VERDICT_COLORS[record.verdict]
+    """HTML for the verdict block. Only enum-derived text and numbers go into the markup."""
     label = html.escape(VERDICT_TEXT[record.verdict])
     note = html.escape(VERDICT_NOTE[record.verdict])
+    width = max(0, min(100, round(record.p_true * 100)))
     return (
-        f'<div style="background:{bg};color:{fg};padding:1rem 1.25rem;border-radius:12px;'
-        f'border:1px solid {fg}33">'
-        f'<div style="font-size:1.6rem;font-weight:700">{label}</div>'
-        f'<div style="margin-top:.25rem">Probability the claim is true: '
-        f"<b>{percent(record.p_true)}</b></div>"
-        f'<div style="margin-top:.25rem;opacity:.85">{note}</div></div>'
+        '<div class="v-verdict">'
+        f'<span class="v-cap"><span class="dot" style="background:{DOT_COLORS[record.verdict]}">'
+        "</span>Verdict</span>"
+        f'<div class="label">{label}</div>'
+        f'<div class="p">{percent(record.p_true)} chance the claim is true</div>'
+        f'<div class="v-bar"><i style="width:{width}%"></i></div>'
+        f'<div class="v-cap" style="margin-top:12px">{note}</div></div>'
     )
 
 
@@ -124,11 +132,6 @@ def redaction_notice(counts: dict[str, int]) -> str | None:
 
 
 CHILDREN: tuple[BNNode, ...] = ("fact_check", "corroboration", "sensational", "specifics")
-_FILL = {
-    "likely_false": "#fee4e2",
-    "unverified": "#fef0c7",
-    "likely_true": "#d1fadf",
-}
 
 
 def network_dot(evidence: Evidence, p_true: float, verdict: VerdictLabel) -> str:
@@ -139,12 +142,12 @@ def network_dot(evidence: Evidence, p_true: float, verdict: VerdictLabel) -> str
         label = f"{NODE_TITLE[node]}\\n{ev[node]}"
         return (
             f'{node} [label="{label}", shape=box, style="rounded,filled", '
-            'fillcolor="#eef2ff", color="#4f46e5"];'
+            'fillcolor="#f5f5f5", color="#111111"];'
         )
 
     claim = (
         f'claim_true [label="Claim is true\\nP(true) = {percent(p_true)}", shape=ellipse, '
-        f'style=filled, fillcolor="{_FILL[verdict]}", color="#444444"];'
+        f'style=filled, fillcolor="#111111", fontcolor="#ffffff", color="#111111"];'
     )
     lines = [
         "digraph G {",
@@ -160,3 +163,100 @@ def network_dot(evidence: Evidence, p_true: float, verdict: VerdictLabel) -> str
         "}",
     ]
     return "\n".join(lines)
+
+
+def _esc(value: object) -> str:
+    return html.escape(str(value))
+
+
+def section_html(title: str) -> str:
+    return f'<div class="v-section"><div class="v-h1" role="heading" aria-level="2">{_esc(title)}</div></div>'
+
+
+def claim_html(claim_text: str) -> str:
+    text = _esc(claim_text) if claim_text else "(no claim sentence found)"
+    return (
+        '<div class="v-section"><div class="v-cap">The claim Verity read</div>'
+        f'<div class="v-h2" style="margin-top:8px">{text}</div></div>'
+    )
+
+
+def notice_html(text: str) -> str:
+    return f'<div class="v-note">{_esc(text)}</div>'
+
+
+def warning_html(text: str) -> str:
+    return f'<div class="v-note"><span class="tag">Warning</span>{_esc(text)}</div>'
+
+
+def lookalike_text(flag_kind: str, domain: str, of: str | None, distance: int | None) -> str:
+    if flag_kind == "lookalike":
+        return (
+            f"The link to {domain} looks like {of} (edit distance {distance}) but is a different "
+            "site. The source is treated as low credibility."
+        )
+    return (
+        f"{domain} is a link shortener, so the real destination is hidden. "
+        "The source is treated as unknown."
+    )
+
+
+def matches_html(record: VerdictRecord) -> str:
+    if not record.matches:
+        return '<div class="v-cap" style="margin-top:12px">No published fact-check matched this claim.</div>'
+    rows = []
+    for m in record.matches:
+        link = safe_link(m.url)
+        name = (
+            f'<a href="{_esc(link)}" target="_blank" rel="noopener">{_esc(m.publisher)}</a>'
+            if link
+            else _esc(m.publisher)
+        )
+        rows.append(
+            f'<div class="v-row"><div><b>{name}</b>'
+            f'<div class="v-cap">Similarity {m.similarity:.2f}</div></div>'
+            f'<span class="v-pill">Rated {_esc(m.rating)}</span></div>'
+        )
+    return "".join(rows)
+
+
+def family_html(record: VerdictRecord) -> str | None:
+    fam = record.family
+    if fam is None:
+        return None
+    if fam.source == "variant":
+        tail = "An edited copy of a rumour that has a published fact-check."
+    elif fam.source == "existing":
+        tail = "Similar messages have been checked before."
+    else:
+        tail = "First time this rumour is seen."
+    return (
+        f'<div class="v-cap" style="margin-top:12px">Rumour family '
+        f'<span class="v-pill">{_esc(fam.family_id)}</span> {_esc(tail)}</div>'
+    )
+
+
+def reasons_html(reasons: list[Reason]) -> str:
+    rows = []
+    for r in reasons:
+        half = 60
+        span = min(abs(r.shift) * 100 * 1.2, half)  # 1 point ~ 1.2px, capped at the half-width
+        left = half if r.shift >= 0 else half - span
+        cls = "" if r.shift >= 0 else ' class="neg"'
+        rows.append(
+            f'<div class="v-row"><div><b>{_esc(NODE_TITLE[r.node])}</b>'
+            f'<div class="v-cap">{_esc(state_text(r.node, r.state))}</div></div>'
+            f'<div><span class="v-mini"><i{cls} style="left:{left:.0f}px;width:{span:.0f}px"></i>'
+            f'</span><span class="v-impact">{_esc(signed_points(r.shift))}</span></div></div>'
+        )
+    return "".join(rows)
+
+
+def what_if_html(items: list[WhatIf], base_p_true: float) -> str:
+    rows = [
+        f'<div class="v-row"><div><b>{_esc(NODE_TITLE[w.node])}</b>'
+        f'<div class="v-cap">If: {_esc(state_text(w.node, w.state))}</div></div>'
+        f'<span class="v-impact">{percent(base_p_true)} to {percent(w.p_true)}</span></div>'
+        for w in items
+    ]
+    return "".join(rows)

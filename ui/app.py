@@ -2,20 +2,25 @@
 
 import streamlit as st
 
-from components import api
+from components import api, theme
+from components.format import notice_html
 from components.render import render_record
 
 st.set_page_config(page_title="VERITY", page_icon=None, layout="wide")
+theme.inject()
+theme.chrome_top("check", api.get_warnings())
 
-st.title("VERITY")
-st.caption("A misinformation checker that shows its work, and admits when it does not know.")
-
-for note in api.get_warnings():
-    st.warning(note)
+st.markdown(
+    '<div class="v-hero"><div class="v-display" role="heading" aria-level="1">Check before<br>you forward.</div>'
+    '<p class="v-lede">Paste a forwarded message in English, Tamil or Hindi. Verity finds the '
+    "claim, looks for published fact-checks and tells you how sure it is, and why. When the "
+    "evidence is thin, it says so.</p></div>",
+    unsafe_allow_html=True,
+)
 
 with st.form("check"):
     text = st.text_area(
-        "Paste the forwarded message (English, Tamil or Hindi)",
+        "Paste the forwarded message",
         height=180,
         placeholder="Paste the message here...",
     )
@@ -35,13 +40,18 @@ if submitted:
                 st.session_state.pop("record", None)
                 if exc.code == "unsupported_language":
                     st.session_state["error"] = (
-                        "VERITY reads English, Tamil and Hindi messages. This one looks like "
+                        "Verity reads English, Tamil and Hindi messages. This one looks like "
                         "another language."
                     )
                 else:
                     st.session_state["error"] = exc.message
 
 if "error" in st.session_state:
-    st.error(st.session_state["error"])
+    st.markdown(
+        notice_html(st.session_state["error"]).replace("v-note", "v-note err"),
+        unsafe_allow_html=True,
+    )
 elif "record" in st.session_state:
     render_record(st.session_state["record"])
+
+theme.chrome_bottom()
