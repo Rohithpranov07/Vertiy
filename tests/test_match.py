@@ -49,7 +49,8 @@ def test_refuted_top_match(retriever: Retriever) -> None:
 
 
 def test_below_threshold_ignored(retriever: Retriever) -> None:
-    assert match_factchecks(_claim("diabetes tablets are sold in many shops of this old town market street"), retriever) == []
+    # shares one word with each document: similarity ~0.23, below the 0.30 threshold
+    assert match_factchecks(_claim("water government"), retriever) == []
 
 
 def test_conflict_resolved_by_similarity_and_logged(caplog: pytest.LogCaptureFixture) -> None:
