@@ -1,0 +1,9 @@
+text,PHONE,EMAIL,UPI,CARD,ID12
+call me on 9876543210 now,1,0,0,0,0
+call +91 98765 43210 or 91234-56789,2,0,0,0,0
+pay to rahul.k@okaxis today,0,0,1,0,0
+mail someone@example.com please,0,1,0,0,0
+card 1234 5678 9012 3456 expires,0,0,0,1,0
+id number 1234 5678 9012 here,0,0,0,0,1
+Hot lemon water cures diabetes,0,0,0,0,0
+Rs 5000 offer on 12 Nov,0,0,0,0,0

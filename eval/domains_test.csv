@@ -1,0 +1,14 @@
+domain,expected
+pib-gov.in,lookalike
+wh0.int,lookalike
+thehindu.co,lookalike
+thehlndu.com,lookalike
+reuters.corn,lookalike
+ndtv.in,lookalike
+bbc.com,trusted
+news.bbc.com,trusted
+indianexpress.com,trusted
+who.int,trusted
+wikipedia.org,unlisted
+example.org,unlisted
+bit.ly,shortener

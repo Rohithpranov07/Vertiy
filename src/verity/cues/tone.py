@@ -54,7 +54,12 @@ def _load_model(path: str) -> tuple[object, object] | None:
     return loaded
 
 
+_warned = False
+
+
 def reset_model_cache() -> None:
+    global _warned
+    _warned = False
     _load_model.cache_clear()
 
 
@@ -75,7 +80,10 @@ def tone_score(text: str, model_path: Path | None = None) -> float:
     style = style_score(text)
     nb = nb_score(text, model_path)
     if nb is None:
-        log.warning("no trained tone model; using the style score alone")
+        global _warned
+        if not _warned:
+            log.warning("no trained tone model; using the style score alone")
+            _warned = True
         return style
     return NB_WEIGHT * nb + (1 - NB_WEIGHT) * style
 

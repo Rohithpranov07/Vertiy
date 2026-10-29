@@ -49,6 +49,17 @@ class Baseline:
         return [float(p[idx]) for p in proba]
 
 
+def cross_val_p_true(rows: list[dict[str, str]], seed: int) -> list[float]:
+    """Out-of-fold P(true) for each `true`/`false` row of `rows` (honest dev-set numbers)."""
+    labels = [r["label"] for r in rows]
+    cv = StratifiedKFold(n_splits=MIN_PER_CLASS_FOR_CV, shuffle=True, random_state=seed)
+    proba = cross_val_predict(
+        _model(seed), [r["text"] for r in rows], labels, cv=cv, method="predict_proba"
+    )
+    classes = sorted(set(labels))
+    return [float(p[classes.index("true")]) for p in proba]
+
+
 def read_rows(path: Path) -> list[dict[str, str]]:
     with path.open(newline="", encoding="utf-8") as fh:
         return list(csv.DictReader(fh))
