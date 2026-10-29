@@ -21,6 +21,7 @@ def request_with_retry(
     params: dict[str, str | int] | None = None,
     headers: dict[str, str] | None = None,
     json_body: dict[str, object] | None = None,
+    form: dict[str, str] | None = None,
     service: str = "external",
 ) -> httpx.Response:
     """Send a request; retry on timeouts, connection errors, 429 and 5xx.
@@ -30,7 +31,9 @@ def request_with_retry(
     last: str = "no attempt made"
     for attempt in range(max_retries + 1):
         try:
-            resp = client.request(method, url, params=params, headers=headers, json=json_body)
+            resp = client.request(
+                method, url, params=params, headers=headers, json=json_body, data=form
+            )
         except (httpx.TimeoutException, httpx.TransportError) as exc:
             last = f"{type(exc).__name__}"
         else:

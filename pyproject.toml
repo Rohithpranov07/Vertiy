@@ -60,3 +60,9 @@ follow_untyped_imports = true
 [[tool.mypy.overrides]]
 module = ["verity.schemas", "verity.config", "verity.db.models", "verity.api.*", "verity.clients.*", "scripts.*"]
 disallow_any_explicit = false
+
+# langdetect ships no type information.
+[[tool.mypy.overrides]]
+module = ["verity.lang.detect"]
+disallow_untyped_calls = false
+implicit_reexport = true
