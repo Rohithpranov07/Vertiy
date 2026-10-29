@@ -50,6 +50,13 @@ class Settings(BaseModel):
     radar_limit: int = Field(10, ge=1)  # default Radar list size
     max_keywords: int = Field(5, ge=1)  # keywords stored per family (D2)
 
+    # External HTTP behaviour (clients)
+    http_timeout_s: float = Field(10.0, gt=0)
+    http_max_retries: int = Field(3, ge=0)
+    http_backoff_s: float = Field(0.5, ge=0)
+    factcheck_page_size: int = Field(20, ge=1)
+    factcheck_max_pages: int = Field(3, ge=1)
+
 
 def _clean(value: str) -> str:
     """Drop an inline ``# comment`` (as written in .env.example) and surrounding space."""
@@ -76,6 +83,9 @@ _ENV_MAP: dict[str, str] = {
     "LOOKALIKE_MIN_LEN": "lookalike_min_len",
     "RADAR_MIN_COUNT": "radar_min_count",
     "RADAR_WINDOW_HOURS": "radar_window_hours",
+    "HTTP_TIMEOUT_S": "http_timeout_s",
+    "HTTP_MAX_RETRIES": "http_max_retries",
+    "HTTP_BACKOFF_S": "http_backoff_s",
     "API_BASE": "api_base",
     "UI_PORT": "ui_port",
 }

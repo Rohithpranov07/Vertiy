@@ -1,0 +1,1 @@
+# One fact-check search query per line (human-curated). Lines starting with # are ignored.
