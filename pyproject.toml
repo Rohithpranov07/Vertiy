@@ -34,7 +34,7 @@ where = ["src"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-pythonpath = ["src", "."]
+pythonpath = ["src", ".", "ui"]
 
 [tool.ruff]
 line-length = 100
@@ -48,8 +48,8 @@ select = ["E", "F", "I", "UP", "B", "ANN401"]
 python_version = "3.11"
 strict = true
 disallow_any_explicit = true
-mypy_path = "src"
-files = ["src/verity", "scripts", "eval"]
+mypy_path = "src:ui"
+files = ["src/verity", "scripts", "eval", "ui"]
 explicit_package_bases = true
 
 [[tool.mypy.overrides]]
@@ -60,7 +60,7 @@ follow_untyped_imports = true
 # pydantic's BaseModel base classes contain Any; mypy reports it on every model
 # class line. Our own code in these modules still uses no Any.
 [[tool.mypy.overrides]]
-module = ["verity.schemas", "verity.config", "verity.db.models", "verity.api.*", "verity.clients.*", "verity.bn.network", "scripts.*", "eval.*"]
+module = ["verity.schemas", "verity.config", "verity.db.models", "verity.api.*", "verity.clients.*", "verity.bn.network", "scripts.*", "eval.*", "ui.*", "components.*", "app"]
 disallow_any_explicit = false
 
 # langdetect ships no type information.
