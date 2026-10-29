@@ -8,8 +8,10 @@ from verity.retrieval.match import (
     to_corroboration,
     to_fact_check_state,
 )
+from verity.retrieval.variant import apply_variant
 
 __all__ = [
+    "apply_variant",
     "Retriever",
     "match_factchecks",
     "match_headlines",
