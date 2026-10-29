@@ -18,6 +18,8 @@ dependencies = [
     "langdetect==1.0.9",
     "httpx==0.28.1",
     "matplotlib==3.11.2",
+    "numpy==2.5.4",
+    "pandas==3.1.0",
 ]
 
 [project.optional-dependencies]
@@ -51,7 +53,7 @@ files = ["src/verity", "scripts", "eval"]
 explicit_package_bases = true
 
 [[tool.mypy.overrides]]
-module = ["pgmpy.*", "langdetect.*", "sklearn.*", "spacy.*", "matplotlib.*", "networkx.*"]
+module = ["pgmpy.*", "pandas.*", "langdetect.*", "sklearn.*", "spacy.*", "matplotlib.*", "networkx.*"]
 ignore_missing_imports = true
 follow_untyped_imports = true
 
