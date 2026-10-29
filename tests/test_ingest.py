@@ -125,3 +125,18 @@ def test_load_domains_rejects_bad_class(tmp_path: Path) -> None:
     with pytest.raises(DataError):
         load_domains(conn, bad)
     assert db.get_domain(conn, "x.example") is None
+
+
+def test_prefix_rules_resolve_free_text_ratings() -> None:
+    from scripts.ingest_factchecks import resolve_rating
+
+    rules = {
+        "false": "refuted",
+        "false.*": "refuted",
+        "mostly true": "supported",
+        "true.*": "supported",
+    }
+    assert resolve_rating("False", rules) == "refuted"  # type: ignore[arg-type]
+    assert resolve_rating("False. The video is old.", rules) == "refuted"  # type: ignore[arg-type]
+    assert resolve_rating("True. It is official.", rules) == "supported"  # type: ignore[arg-type]
+    assert resolve_rating("Half true", rules) is None  # type: ignore[arg-type]

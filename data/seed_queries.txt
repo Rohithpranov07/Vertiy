@@ -1,1 +1,148 @@
 # One fact-check search query per line (human-curated). Lines starting with # are ignored.
+covid vaccine
+vaccine side effects
+5G
+whatsapp forward
+UPI scam
+bank fraud
+election
+voting machine
+drinking water cure
+hot water cure
+lockdown
+free recharge
+government scheme
+viral video
+fake news
+miscaptioned photo
+flood
+earthquake
+prime minister
+Modi
+Rahul Gandhi
+chief minister
+muslim
+hindu
+communal
+temple
+mosque
+army
+border China
+Pakistan
+Kashmir
+farmers protest
+petrol price
+GST
+Aadhaar
+PAN card
+income tax
+bank holiday
+ATM
+RBI
+demonetisation
+cryptocurrency
+bitcoin
+lottery
+job scam
+free laptop
+free ration
+cash prize
+OTP fraud
+KBC lottery
+WhatsApp ban
+WhatsApp message
+Facebook post
+telegram
+cancer cure
+diabetes cure
+home remedy
+turmeric
+lemon
+garlic
+cow urine
+oxygen
+hospital
+doctor
+mask
+sanitiser
+monkeypox
+dengue
+bird flu
+tsunami
+cyclone
+heatwave
+rain
+NASA
+moon
+solar eclipse
+asteroid
+school closed
+exam
+CBSE
+NEET
+student
+train accident
+plane crash
+road accident
+kidnapping
+child abuse
+rape
+murder
+police
+court verdict
+Supreme Court
+Ram Mandir
+cricket
+IPL
+Virat Kohli
+Olympics
+actor death
+celebrity
+Rajinikanth
+Tamil Nadu
+Chennai
+Kerala
+Delhi
+Mumbai
+Bengal
+Hindi
+Tamil
+old video
+fake photo
+edited image
+deepfake
+AI generated
+satire
+hoax
+rumour
+chain message
+forwarded as received
+true
+accurate
+correct claim
+confirmed
+verified
+government data
+official statistics
+scheme launched
+PM Kisan
+Ayushman Bharat
+Jan Dhan
+digital payments
+UPI transactions
+ISRO
+Chandrayaan
+census
+GDP
+literacy rate
+electricity connections
+toilets built
+LPG connections
+vaccination coverage
+metro
+airport
+highway
+railway
+WHO says
+study finds
+PIB fact check

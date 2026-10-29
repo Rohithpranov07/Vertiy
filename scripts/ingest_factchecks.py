@@ -38,6 +38,17 @@ def load_rating_map(path: Path) -> dict[str, Rating]:
     return out
 
 
+def resolve_rating(raw: str, rating_map: dict[str, Rating]) -> Rating | None:
+    """Exact (case-insensitive) match first, then a ``prefix*`` rule for free-text ratings."""
+    key = raw.strip().lower()
+    if key in rating_map:
+        return rating_map[key]
+    for pattern, rating in rating_map.items():
+        if pattern.endswith("*") and key.startswith(pattern[:-1]):
+            return rating
+    return None
+
+
 def _log_unmapped(path: Path, ratings: set[str]) -> None:
     if not ratings:
         return
@@ -56,10 +67,10 @@ def ingest_claims(
     for claim in claims:
         for review in claim.claimReview:
             raw = (review.textualRating or "").strip()
-            rating = rating_map.get(raw.lower())
+            rating = resolve_rating(raw, rating_map)
             if not claim.text or not review.url or rating is None:
                 skipped += 1
-                if raw and raw.lower() not in rating_map:
+                if raw and rating is None:
                     unmapped.add(raw)
                 continue
             publisher = (
