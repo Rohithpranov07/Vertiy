@@ -1,0 +1,21 @@
+# Alarm / persuasion words and phrases (one per line, case-insensitive). Extend as needed.
+shocking
+urgent
+urgently
+breaking
+warning
+alert
+must share
+forward this
+share this
+immediately
+viral
+100% true
+danger
+deadly
+secret
+exposed
+miracle
+hurry
+don't ignore
+before it is deleted
