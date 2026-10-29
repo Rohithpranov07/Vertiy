@@ -47,7 +47,7 @@ python_version = "3.11"
 strict = true
 disallow_any_explicit = true
 mypy_path = "src"
-files = ["src/verity", "scripts"]
+files = ["src/verity", "scripts", "eval"]
 explicit_package_bases = true
 
 [[tool.mypy.overrides]]
@@ -58,11 +58,11 @@ follow_untyped_imports = true
 # pydantic's BaseModel base classes contain Any; mypy reports it on every model
 # class line. Our own code in these modules still uses no Any.
 [[tool.mypy.overrides]]
-module = ["verity.schemas", "verity.config", "verity.db.models", "verity.api.*", "verity.clients.*", "scripts.*"]
+module = ["verity.schemas", "verity.config", "verity.db.models", "verity.api.*", "verity.clients.*", "scripts.*", "eval.*"]
 disallow_any_explicit = false
 
 # langdetect ships no type information.
 [[tool.mypy.overrides]]
-module = ["verity.lang.detect"]
+module = ["verity.lang.detect", "verity.retrieval.*", "verity.cues.*"]
 disallow_untyped_calls = false
 implicit_reexport = true
