@@ -82,3 +82,19 @@ def test_hosted_translator_contract() -> None:
     assert str(req.url) == "http://lt.example/translate" and "SECRET" not in str(req.url)
     body = req.content.decode()
     assert "source=ta" in body and "target=en" in body and "api_key=SECRET" in body
+
+
+def test_short_english_is_not_rejected() -> None:
+    assert detect_language("Indian PM is muslim") == "en"
+
+
+def test_english_with_foreign_looking_names_is_accepted() -> None:
+    assert detect_language("PM Modi evades question on petrol price hike") == "en"
+    assert (
+        detect_language("Hindu girls kidnapped from elevator by Muslim men in Bangalore, Karnataka")
+        == "en"
+    )
+    with pytest.raises(InputError):
+        detect_language(
+            "Rastislav Iliev a Peter Visolajský hovoria o nebezpečenstve vakcín proti covidu"
+        )

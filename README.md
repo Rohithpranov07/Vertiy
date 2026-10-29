@@ -124,10 +124,10 @@ Defined in [.env.example](.env.example) and validated in [src/verity/config.py](
 | `DB_PATH`, `INDEX_DIR` | `./data/verity.db`, `./data/index` | storage |
 | `VERDICT_THRESHOLD` | 0.75 | confidence needed for a non-abstaining verdict |
 | `RETRIEVAL_TOP_K` | 5 | best-first candidates per index |
-| `FACTCHECK_MATCH_THRESHOLD`, `HEADLINE_MATCH_THRESHOLD`, `TONE_THRESHOLD` | 0.30 / 0.30 / 0.50 | initial guesses; tune on the dev split, then freeze |
+| `FACTCHECK_MATCH_THRESHOLD`, `HEADLINE_MATCH_THRESHOLD`, `TONE_THRESHOLD` | 0.40 / 0.30 / 0.50 | fact-check threshold swept on held-out published fact-checks (0.30 let 3 of 411 weak matches call a true claim false; 0.40 with stop words removed gave none and more coverage). The other two are initial guesses; tune on the dev split, then freeze |
 | `MAX_MESSAGE_CHARS` | 5000 | input limit |
 | `RANDOM_SEED`, `LIKELIHOOD_WEIGHTING_SAMPLES` | 42, 5000 | determinism and sampling |
-| `SIMHASH_MAX_HAMMING` | 14 | D2 family threshold (tune on real data) |
+| `SIMHASH_MAX_HAMMING` | 12 | D2 family threshold, swept on held-out fact-checks (14 added 30 matches, 3 of them wrong) |
 | `LOOKALIKE_MAX_EDIT`, `LOOKALIKE_MIN_LEN` | 2, 6 | D3 edit distance and minimum trusted-domain length |
 | `RADAR_MIN_COUNT`, `RADAR_WINDOW_HOURS` | 3, 24 | D5 minimum checks and window |
 | `API_BASE`, `UI_PORT` | `http://localhost:8000`, 8501 | services |
@@ -176,7 +176,7 @@ Helvetica families with fallbacks) so the browser makes no third-party font requ
 - **Coverage gaps.** A new rumour has no fact-check yet, so many messages correctly return Unverified.
 - **Small labelled set.** The target is 300 messages (200 dev / 100 test); results on a set this size are noisy, and the dev numbers are optimistic because CPTs and the tone model are learned on dev.
 - **Curated source list.** Source credibility is only as good as the human-approved `domains.csv`; keep it public and include known sister domains.
-- **Fingerprint limits.** Heavy rewrites escape the SimHash family match, and very short messages give an unstable fingerprint (in the build's synthetic check a 30-character sentence's light edits measured 19, 15 and 19 bits apart, beyond the default threshold of 14, while realistic multi-sentence forwards stayed within 12). TF-IDF retrieval remains the main channel. The threshold must be tuned on real data.
+- **Fingerprint limits.** Heavy rewrites escape the SimHash family match, and very short messages give an unstable fingerprint (in the build's synthetic check a 30-character sentence's light edits measured 19, 15 and 19 bits apart, beyond the default threshold of 12, while realistic multi-sentence forwards stayed within 12). TF-IDF retrieval remains the main channel. The threshold must be tuned on real data.
 - **Lookalike guard limit.** A distance-2 rule misses distant spellings (the documented `ndtv.in` vs `ndtv.com` case), and a legitimate sister domain not in the trusted list would be flagged. Short trusted domains (under six characters) are exact-match only.
 - **Redaction is not anonymisation.** Only phone numbers, e-mail addresses, UPI handles, 16-digit card numbers and 12-digit ID numbers are removed. Names and addresses stay, and a name can end up among a rumour family's stored keywords.
 - **Radar scope.** Counts reflect only the users of this system and show what is being checked, not what is true. It never changes a verdict.

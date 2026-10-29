@@ -78,7 +78,7 @@ def test_errors_carry_codes() -> None:
 
 def test_config_defaults_and_overrides() -> None:
     s = load_settings({})
-    assert s.verdict_threshold == 0.75 and s.simhash_max_hamming == 14
+    assert s.verdict_threshold == 0.75 and s.simhash_max_hamming == 12
     s2 = load_settings({"VERDICT_THRESHOLD": "0.8  # tuned", "RANDOM_SEED": "7"})
     assert s2.verdict_threshold == 0.8 and s2.random_seed == 7
     with pytest.raises(DataError):
