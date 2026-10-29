@@ -161,27 +161,104 @@ button[kind="primaryFormSubmit"] {{ background: var(--ink) !important; color: va
 </style>
 """
 
+CSS_EXTRA = """
+<style>
+/* stat and metric tiles */
+.v-tiles { display:grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap:12px; margin-top:12px; }
+.v-tile { background: var(--cloud); padding:24px; min-height:120px; display:flex;
+  flex-direction:column; justify-content:space-between; gap:16px; }
+.v-tile .num { font-family: var(--display) !important; font-weight:700; text-transform:uppercase;
+  font-size: clamp(32px, 4.4vw, 52px); line-height:.95; word-break:break-word; }
+
+/* bento: 2 + 1 over 1 + 1 + 1 */
+.v-bento { display:grid; grid-template-columns: repeat(3, 1fr); gap:12px; margin-top:12px; }
+.v-bento .c { background: var(--cloud); padding:28px; min-height:180px; display:flex;
+  flex-direction:column; justify-content:flex-end; }
+.v-bento .c.a { grid-column: span 2; min-height:260px; }
+.v-bento .c.ink { background: var(--ink); color: var(--canvas); }
+.v-bento .c.ink .v-h1 { color: var(--canvas); margin-bottom:12px !important; }
+.v-bento .c.ink p { color: var(--hairline); max-width:480px; }
+.v-bento .c.line { background: var(--canvas); box-shadow: inset 0 0 0 1px var(--hairline); }
+.v-bento h4 { font-family: var(--display) !important; font-size:24px; text-transform:uppercase;
+  font-weight:700; margin:0 0 8px; letter-spacing:.01em; }
+.v-bento p { font-size:14px; line-height:1.5; font-weight:500; margin:0; color: var(--mute); }
+@media (max-width: 760px) { .v-bento { grid-template-columns: 1fr; }
+  .v-bento .c.a { grid-column: auto; min-height:200px; } }
+
+/* process steps: a true sequence, so numbered */
+.v-steps { display:grid; grid-template-columns: repeat(4, 1fr); gap:24px; margin-top:12px; }
+.v-steps .s { border-top:2px solid var(--ink); padding-top:16px; }
+.v-steps .n { font-family: var(--display) !important; font-weight:700; font-size:40px; line-height:1; }
+.v-steps h4 { font-size:16px; font-weight:500; margin:12px 0 6px; }
+.v-steps p { font-size:14px; line-height:1.5; font-weight:500; color: var(--mute); margin:0; }
+@media (max-width: 960px) { .v-steps { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 520px) { .v-steps { grid-template-columns: 1fr; } }
+
+/* evidence signal cells */
+.v-sigs { display:grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap:12px; margin-top:12px; }
+.v-sig { background: var(--cloud); padding:20px; display:flex; flex-direction:column; gap:8px; }
+.v-sig b { font-weight:500; font-size:16px; line-height:1.3; }
+
+/* example chips */
+.st-key-examples .stButton button { background: var(--canvas); box-shadow: inset 0 0 0 1px var(--hairline);
+  height:40px; padding:8px 18px; font-size:14px; white-space:nowrap; }
+.st-key-examples .stButton button:hover { box-shadow: inset 0 0 0 1px var(--ink); }
+.st-key-examples .stButton button p { font-size:14px; }
+.st-key-examples [data-testid="stHorizontalBlock"] { flex-wrap: wrap; gap:8px; }
+.st-key-examples [data-testid="stColumn"] { width:auto !important; min-width:0 !important; flex:0 0 auto !important; }
+
+/* tabs: underline style */
+[data-testid="stTabs"] [role="tablist"] { gap:28px; border-bottom:1px solid var(--hairline-soft); }
+[data-testid="stTabs"] button[role="tab"] { height:48px; padding:0 !important; font-size:16px;
+  font-weight:500; background:transparent; color: var(--mute); }
+[data-testid="stTabs"] button[role="tab"][aria-selected="true"] { color: var(--ink); }
+[data-testid="stTabs"] [data-baseweb="tab-highlight"] { background: var(--ink); height:2px; }
+[data-testid="stTabs"] [data-baseweb="tab-border"] { display:none; }
+[data-testid="stTabs"] [data-baseweb="tab-panel"] { padding-top:8px; }
+
+/* download button matches the pill system */
+.stDownloadButton button { border-radius:30px !important; height:48px; padding:16px 32px;
+  font-size:16px; font-weight:500; border:none; background: var(--ink); color: var(--canvas); }
+.stDownloadButton button p { color: var(--canvas) !important; font-size:16px; font-weight:500; }
+.stDownloadButton button:active { transform: scale(.94); opacity:.5; }
+
+/* the verdict is the one moment that moves: it rises in once */
+@media (prefers-reduced-motion: no-preference) {
+  .v-verdict { animation: v-rise .45s cubic-bezier(.16,1,.3,1) both; }
+  @keyframes v-rise { from { opacity:0; transform: translateY(12px); } to { opacity:1; transform:none; } }
+}
+</style>
+"""
+
 
 def inject() -> None:
     """Apply the design system to the current page."""
-    st.markdown(CSS, unsafe_allow_html=True)
+    st.markdown(CSS + CSS_EXTRA, unsafe_allow_html=True)
+
+
+NAV = (
+    ("check", "/", "Check"),
+    ("radar", "/radar", "Radar"),
+    ("history", "/history", "History"),
+    ("guide", "/guide", "Guide"),
+)
 
 
 def chrome_top(active: str, warnings: list[str] | None = None) -> None:
-    """Utility bar and primary nav in one block. ``active`` is 'check' or 'radar'."""
+    """Utility bar and primary nav in one block. ``active`` is a key of NAV."""
     import html as _html
 
     note = ""
     if warnings:
         joined = _html.escape("  |  ".join(w.split(":", 1)[0] for w in warnings))
         note = f'<span class="warn" title="degraded mode">{joined}</span>'
-    check_cls = "on" if active == "check" else ""
-    radar_cls = "on" if active == "radar" else ""
+    links = "".join(
+        f'<a class="{"on" if key == active else ""}" href="{href}" target="_self">{label}</a>'
+        for key, href, label in NAV
+    )
     st.markdown(
         f'<div class="v-util">{note}<span>English</span><span>Tamil</span><span>Hindi</span></div>'
-        '<div class="v-nav"><span class="v-logo">Verity</span>'
-        f'<a class="{check_cls}" href="/" target="_self">Check</a>'
-        f'<a class="{radar_cls}" href="/radar" target="_self">Radar</a>'
+        f'<div class="v-nav"><span class="v-logo">Verity</span>{links}'
         '<span class="sp"></span><span class="v-fine">Shows its work. Admits when it does not know.'
         "</span></div>",
         unsafe_allow_html=True,

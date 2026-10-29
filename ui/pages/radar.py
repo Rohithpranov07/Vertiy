@@ -5,6 +5,7 @@ import html
 import streamlit as st
 
 from components import api, theme
+from components.cards import radar_tiles_html
 from components.format import notice_html, safe_link, section_html
 
 st.set_page_config(page_title="VERITY - Rumour Radar", layout="wide")
@@ -34,6 +35,8 @@ else:
             notice_html("No unverified rumour has been checked often enough to appear yet."),
             unsafe_allow_html=True,
         )
+    if items:
+        st.markdown(radar_tiles_html(items), unsafe_allow_html=True)
     top = max((i.surge for i in items), default=1.0)
     rows = []
     for rank, i in enumerate(items, start=1):

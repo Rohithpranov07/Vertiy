@@ -18,6 +18,7 @@ from verity.schemas import (
     ClaimRecord,
     Evidence,
     FamilyInfo,
+    HealthResponse,
     LookalikeFlag,
     Match,
     Passport,
@@ -94,9 +95,16 @@ def run_app(monkeypatch: pytest.MonkeyPatch, result: object) -> AppTest:
         return result
 
     monkeypatch.setattr(api, "post_check", fake_check)
+    monkeypatch.setattr(
+        api,
+        "get_health",
+        lambda: HealthResponse(
+            factchecks=3, headlines=2, domains=1, last_refresh="2026-10-29T10:00:00Z"
+        ),
+    )
     at = AppTest.from_file(str(UI_APP), default_timeout=20).run()
     at.text_area[0].set_value("some message")
-    at.button[0].click().run()
+    next(b for b in at.button if b.label == "Check").click().run()
     return at
 
 
@@ -109,7 +117,8 @@ def test_likely_false_screen(monkeypatch: pytest.MonkeyPatch) -> None:
     assert "looks like thehindu.com" in shown and "Warning" in shown
     assert "Rumour family" in shown and "edited copy" in shown
     assert "Rated refuted" in shown and "-62 pts" in shown
-    assert [b.label for b in at.button] == ["Check", "Yes", "No"]
+    labels = [b.label for b in at.button]
+    assert labels[-3:] == ["Check", "Yes", "No"] and "Water and heart attacks" in labels
 
 
 def test_unverified_screen(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -165,3 +174,56 @@ def test_html_builders_escape_untrusted_text() -> None:
     )
     assert "<script>" not in out and "javascript:" not in out
     assert 'href="http://x.example/&quot;onmouseover=&quot;x"' in out
+
+
+def test_new_cards_render_and_escape() -> None:
+    from components.cards import (
+        bento_html,
+        history_rows_html,
+        history_tiles_html,
+        metrics_html,
+        passport_html,
+        privacy_html,
+        radar_tiles_html,
+        signals_html,
+        stat_tiles_html,
+        steps_html,
+    )
+    from components.examples import EXAMPLES
+    from verity.schemas import RadarItem
+
+    rec = record()
+    assert "9%" in metrics_html(rec) and "Edited copy" in metrics_html(rec)
+    assert "Phone numbers" in privacy_html({"PHONE": 1})
+    assert "Nothing in this message needed removing" in privacy_html({})
+    assert "pid" in passport_html(rec.passport) and "0.75" in passport_html(rec.passport)
+    assert "no fact-check found" not in signals_html(rec) and "alarming wording" in signals_html(
+        rec
+    )
+    health = HealthResponse(factchecks=2662, headlines=0, domains=0, last_refresh=None)
+    assert "2,662" in stat_tiles_html(health) and "Never" in stat_tiles_html(health)
+    assert bento_html().count('class="c ') == 5 and steps_html().count('class="s"') == 4
+    evil = "<img src=x onerror=alert(1)>"
+    items = [
+        {
+            "hash": "h",
+            "claim": evil,
+            "verdict": "unverified",
+            "p_true": 0.4,
+            "matches": 0,
+            "time": "10:00",
+        }
+    ]
+    assert "<img" not in history_rows_html(items) and "1" in history_tiles_html(items)
+    radar = [
+        RadarItem(
+            family_id="f",
+            keywords=["k"],
+            recent=5,
+            previous=1,
+            surge=2.5,
+            linked_url="http://x.example/a",
+        )
+    ]
+    assert "2.50x" in radar_tiles_html(radar)
+    assert len(EXAMPLES) == 8 and all(e.text.strip() for e in EXAMPLES)
