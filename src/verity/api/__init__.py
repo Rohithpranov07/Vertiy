@@ -1,1 +1,1 @@
-"""VERITY api package."""
+"""FastAPI service."""

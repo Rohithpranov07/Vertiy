@@ -63,6 +63,18 @@ def as_redacted(result: RedactionResult) -> RedactedText:
     return RedactedText(result.text)
 
 
+def derive(source: RedactedText, derived: str) -> RedactedText:
+    """Re-wrap text derived from an already-redacted message (e.g. its claim sentence).
+
+    Raises if the derived text would still be changed by redaction, so raw identifiers
+    cannot be smuggled through this helper. ``source`` documents the provenance.
+    """
+    del source
+    if redact(derived).text != derived:
+        raise ValueError("derived text still contains identifiers")
+    return RedactedText(derived)
+
+
 def message_hash(text: RedactedText) -> str:
     """Hex SHA-256 of the whitespace-normalised, lower-cased redacted text."""
     normalised = " ".join(text.split()).lower()
