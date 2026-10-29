@@ -6,6 +6,7 @@ install:
 	python3.12 -m venv .venv
 	$(PY) -m pip install -U pip
 	$(PY) -m pip install -e ".[dev]"
+	$(PY) -m spacy download en_core_web_sm
 	$(PY) -m pip freeze --exclude-editable > requirements.lock
 
 lint:
