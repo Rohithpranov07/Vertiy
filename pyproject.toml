@@ -65,6 +65,6 @@ disallow_any_explicit = false
 
 # langdetect ships no type information.
 [[tool.mypy.overrides]]
-module = ["verity.lang.detect", "verity.retrieval.*", "verity.cues.*", "verity.bn.*"]
+module = ["verity.lang.detect", "verity.retrieval.*", "verity.cues.*", "verity.bn.*", "eval.*"]
 disallow_untyped_calls = false
 implicit_reexport = true
