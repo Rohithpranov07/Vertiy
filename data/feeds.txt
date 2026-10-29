@@ -1,0 +1,1 @@
+# One trusted-outlet RSS/Atom feed URL per line (human-supplied). The feed domain must be trusted in `domains`.
