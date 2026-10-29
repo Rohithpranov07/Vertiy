@@ -7,11 +7,21 @@ from pathlib import Path
 
 from verity import db
 from verity.config import get_settings
+from verity.errors import ModelError
 from verity.retrieval.build import FACTCHECK_INDEX, HEADLINE_INDEX
 from verity.retrieval.index import TfidfIndex
 from verity.schemas import ClaimRecord, FactCheckState, HeadlineMatch, Match, YesNo
 
 log = logging.getLogger(__name__)
+
+
+def _load_or_empty(path: Path) -> TfidfIndex:
+    """A missing index file degrades to an empty index (fact_check = none), with a warning."""
+    try:
+        return TfidfIndex.load(path)
+    except ModelError:
+        log.warning("index %s not found; retrieval returns no matches (run make setup)", path.name)
+        return TfidfIndex.build([])
 
 
 @dataclass
@@ -27,8 +37,8 @@ class Retriever:
     def load(cls, conn: sqlite3.Connection, index_dir: Path | None = None) -> "Retriever":
         base = index_dir or get_settings().index_dir
         return cls(
-            TfidfIndex.load(base / FACTCHECK_INDEX),
-            TfidfIndex.load(base / HEADLINE_INDEX),
+            _load_or_empty(base / FACTCHECK_INDEX),
+            _load_or_empty(base / HEADLINE_INDEX),
             {r.id: r for r in db.list_factchecks(conn)},
             {r.id: r for r in db.list_headlines(conn)},
         )

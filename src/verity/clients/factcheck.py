@@ -9,8 +9,11 @@ Verified against the official reference in the build session:
   Auth: API key, sent in the ``x-goog-api-key`` header (not in the URL).
 """
 
+import json
 import time
 from collections.abc import Callable
+from datetime import UTC, datetime
+from pathlib import Path
 
 import httpx
 from pydantic import BaseModel, ConfigDict, ValidationError
@@ -113,3 +116,23 @@ class FactCheckClient:
             if token is None:
                 break
         return claims
+
+
+STATUS_FILE = "ingest_status.json"
+
+
+def write_ingest_status(ok: bool, detail: str = "", directory: Path | None = None) -> None:
+    """Record whether the last fact-check ingestion worked (read by /health)."""
+    base = directory or get_settings().index_dir
+    base.mkdir(parents=True, exist_ok=True)
+    stamp = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
+    payload = {"ok": ok, "detail": detail, "at": stamp}
+    (base / STATUS_FILE).write_text(json.dumps(payload) + "\n", encoding="utf-8")
+
+
+def read_ingest_status(directory: Path | None = None) -> bool | None:
+    """True/False for the last ingestion result, None if it never ran."""
+    path = (directory or get_settings().index_dir) / STATUS_FILE
+    if not path.exists():
+        return None
+    return bool(json.loads(path.read_text(encoding="utf-8")).get("ok"))

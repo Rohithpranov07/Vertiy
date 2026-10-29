@@ -10,6 +10,9 @@ st.set_page_config(page_title="VERITY", page_icon=None, layout="wide")
 st.title("VERITY")
 st.caption("A misinformation checker that shows its work, and admits when it does not know.")
 
+for note in api.get_warnings():
+    st.warning(note)
+
 with st.form("check"):
     text = st.text_area(
         "Paste the forwarded message (English, Tamil or Hindi)",

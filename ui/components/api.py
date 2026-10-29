@@ -74,3 +74,13 @@ def get_radar(window_hours: int | None = None, limit: int | None = None) -> list
         params["limit"] = limit
     resp = _call("GET", "/radar", params=params)
     return [RadarItem.model_validate(item) for item in resp.json()]
+
+
+def get_warnings() -> list[str]:
+    """Degraded-mode notices from /health (empty if healthy or unreachable)."""
+    try:
+        resp = _call("GET", "/health")
+    except ApiError:
+        return []
+    header = resp.headers.get("X-Verity-Warnings", "")
+    return [w.strip() for w in header.split(";") if w.strip()]

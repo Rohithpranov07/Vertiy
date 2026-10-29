@@ -18,9 +18,9 @@ from typing import Literal, cast
 from pydantic import BaseModel, ConfigDict
 
 from verity import db
-from verity.clients.factcheck import Claim, FactCheckClient
+from verity.clients.factcheck import Claim, FactCheckClient, write_ingest_status
 from verity.config import get_settings
-from verity.errors import DataError
+from verity.errors import DataError, ExternalServiceError
 from verity.privacy import as_redacted, redact
 from verity.schemas import Rating
 
@@ -141,13 +141,24 @@ def main(argv: list[str] | None = None) -> int:
         all_unmapped: set[str] = set()
         for q in queries:
             safe = as_redacted(redact(q))
-            claims = client.search_all(safe, args.language)
+            try:
+                claims = client.search_all(safe, args.language)
+            except ExternalServiceError as exc:
+                conn.commit()  # keep whatever was cached so far
+                write_ingest_status(False, exc.code)
+                print(
+                    f"fact-check API unavailable ({exc.code}); keeping the local cache "
+                    f"({db.count_factchecks(conn)} fact-checks)",
+                    file=sys.stderr,
+                )
+                return 1
             a, s, u = ingest_claims(conn, claims, rating_map)
             print(f"{q!r}: {len(claims)} claims, {a} new, {s} skipped")
             total_added += a
             total_skipped += s
             all_unmapped |= u
         _log_unmapped(args.unmapped, all_unmapped)
+        write_ingest_status(True)
         print(
             f"total: {total_added} new, {total_skipped} skipped, "
             f"{len(all_unmapped)} unmapped rating strings -> {args.unmapped}"
