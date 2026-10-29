@@ -12,7 +12,7 @@ from verity.cues import lookalike_flags, source_cred, specifics, tone
 from verity.cues.source import db_lookup
 from verity.errors import InputError
 from verity.explain import ReplyParts, build_passport, reasons, reply_card, what_if
-from verity.extract import extract_claim
+from verity.extract import extract_claim, ranked_sentences
 from verity.lang import prepare
 from verity.privacy import as_redacted, derive, message_hash, redact
 from verity.retrieval import (
@@ -26,11 +26,13 @@ from verity.retrieval import (
 from verity.rumour import extract_keywords, fingerprint, match_family, record_hit
 from verity.schemas import (
     CheckRequest,
+    ClaimRecord,
     Evidence,
     FactCheckState,
     HeadlineMatch,
     Match,
     PartialEvidence,
+    PreparedText,
     VerdictRecord,
     YesNo,
 )
@@ -60,6 +62,23 @@ class Pipeline:
             self._retriever = Retriever.load(conn)
         return self._retriever
 
+    def _retry_sentences(
+        self, prepared: PreparedText, claim: ClaimRecord, retriever: Retriever
+    ) -> tuple[ClaimRecord, list[Match]]:
+        """Try the other check-worthy sentences; the first that matches becomes the claim."""
+        tried = 0
+        for sentence in ranked_sentences(prepared):
+            if sentence == claim.text:
+                continue
+            if tried >= self.settings.claim_extra_candidates:
+                break
+            tried += 1
+            candidate = claim.model_copy(update={"text": sentence})
+            found = match_factchecks(candidate, retriever)
+            if found:
+                return candidate, found
+        return claim, []
+
     def check(self, request: CheckRequest, now: datetime | None = None) -> VerdictRecord:
         s = self.settings
         if not request.text.strip():
@@ -77,25 +96,25 @@ class Pipeline:
         prepared = prepare(safe, self._translator)
         extracted = extract_claim(prepared)
         claim = extracted.claim
-        safe_claim = derive(safe, claim.text)
+        blocked = prepared.language != "en" and not prepared.translation_ok
 
         with db.session() as conn:
             db.init_db(conn)
             retriever = self.retriever(conn)
-            fp = fingerprint(safe_claim)
-            family = match_family(conn, fp)
 
-            fact_check: FactCheckState
-            corroboration: YesNo
             matches: list[Match] = []
             headlines: list[HeadlineMatch] = []
-            if prepared.language != "en" and not prepared.translation_ok:
-                fact_check, corroboration = "none", "no"
-            else:
+            if not blocked:
                 matches = match_factchecks(claim, retriever)
+                if not matches:  # the chosen sentence found nothing: try the next best ones
+                    claim, matches = self._retry_sentences(prepared, claim, retriever)
                 headlines = match_headlines(claim, retriever)
-                fact_check = to_fact_check_state(matches)
-                corroboration = to_corroboration(headlines)
+            fact_check: FactCheckState = "none" if blocked else to_fact_check_state(matches)
+            corroboration: YesNo = "no" if blocked else to_corroboration(headlines)
+
+            safe_claim = derive(safe, claim.text)
+            fp = fingerprint(safe_claim)
+            family = match_family(conn, fp)
             fact_check, family = apply_variant(fact_check, family)
 
             trusted = [d.domain for d in db.list_domains(conn) if d.cls == "trusted"]

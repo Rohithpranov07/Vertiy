@@ -144,3 +144,14 @@ def test_api_endpoints(world: Pipeline) -> None:
     with db.session() as conn:
         rows = db.list_feedback(conn)
     assert len(rows) == 1 and rows[0].message_hash == ok.json()["message_hash"]
+
+
+def test_chain_message_call_to_action_does_not_hide_the_claim(world: Pipeline) -> None:
+    from tests.conftest import DEBUNKED
+
+    from verity.schemas import CheckRequest
+
+    message = f"{DEBUNKED}. Forward this to 10 people to stay safe!"
+    record = world.check(CheckRequest(text=message))
+    assert record.matches and record.claim.text.startswith(DEBUNKED[:20])
+    assert record.verdict == "likely_false"

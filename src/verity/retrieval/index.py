@@ -9,6 +9,14 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from verity.errors import ModelError
 
 
+def _vectorizer(stop_words: str | None) -> TfidfVectorizer:
+    """Stop words are dropped: shared function words ("the", "is", "in") made unrelated claims
+    look similar and produced wrong matches (swept on held-out published fact-checks)."""
+    return TfidfVectorizer(
+        lowercase=True, ngram_range=(1, 2), sublinear_tf=True, stop_words=stop_words
+    )
+
+
 class TfidfIndex:
     def __init__(self, ids: list[int], vectorizer: TfidfVectorizer, matrix: object) -> None:
         self.ids = ids
@@ -18,10 +26,15 @@ class TfidfIndex:
     @classmethod
     def build(cls, docs: list[tuple[int, str]]) -> "TfidfIndex":
         ordered = sorted(docs)
-        vec = TfidfVectorizer(lowercase=True, ngram_range=(1, 2), sublinear_tf=True)
+        vec = _vectorizer(stop_words="english")
         if not ordered:
             return cls([], vec, None)
-        matrix = vec.fit_transform([t for _, t in ordered])
+        texts = [t for _, t in ordered]
+        try:
+            matrix = vec.fit_transform(texts)
+        except ValueError:  # every document is only stop words: keep them rather than fail
+            vec = _vectorizer(stop_words=None)
+            matrix = vec.fit_transform(texts)
         return cls([i for i, _ in ordered], vec, matrix)
 
     def __len__(self) -> int:

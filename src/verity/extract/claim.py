@@ -12,6 +12,7 @@ from verity.errors import ModelError
 from verity.schemas import ClaimRecord, ClaimSignals, ExtractedClaim, PreparedText
 
 _TRIGGER_FILE = Path(__file__).resolve().parents[3] / "data" / "claim_triggers.txt"
+_CTA_FILE = Path(__file__).resolve().parents[3] / "data" / "cta_phrases.txt"
 _MODEL = "en_core_web_sm"
 
 _NUMBER = re.compile(
@@ -59,6 +60,16 @@ def _triggers() -> tuple[re.Pattern[str], ...]:
     return tuple(re.compile(rf"\b{re.escape(w)}\b", re.IGNORECASE) for w in words)
 
 
+@lru_cache(maxsize=1)
+def _ctas() -> tuple[re.Pattern[str], ...]:
+    words = [
+        w.strip().lower()
+        for w in _CTA_FILE.read_text(encoding="utf-8").splitlines()
+        if w.strip() and not w.startswith("#")
+    ]
+    return tuple(re.compile(rf"\b{re.escape(w)}\b", re.IGNORECASE) for w in words)
+
+
 def _links(text: str) -> list[str]:
     out: list[str] = []
     for m in _URL.finditer(text):
@@ -82,7 +93,25 @@ def score_sentence(text: str, has_entity: bool) -> int:
     score = 1 if re.search(r"\d", text) else 0
     score += 1 if has_entity else 0
     score += 1 if any(p.search(text) for p in _triggers()) else 0
+    if any(p.search(text) for p in _ctas()):
+        score -= get_settings().claim_cta_penalty
     return score
+
+
+def ranked_sentences(prepared: PreparedText) -> list[str]:
+    """Every sentence of the message, most check-worthy first (ties: longer, then earlier)."""
+    text = prepared.english.strip()
+    doc = _nlp()(text) if text else None
+    sents = [s for s in doc.sents if s.text.strip()] if doc is not None else []
+    order = sorted(
+        enumerate(sents),
+        key=lambda t: (
+            -score_sentence(t[1].text, bool(t[1].ents)),
+            -len(t[1].text.strip()),
+            t[0],
+        ),
+    )
+    return [s.text.strip() for _, s in order]
 
 
 def extract_claim(prepared: PreparedText) -> ExtractedClaim:

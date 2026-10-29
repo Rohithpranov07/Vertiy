@@ -38,3 +38,17 @@ def test_deterministic_and_tie_goes_to_longer() -> None:
     msg = "Free cure. Free cure for all people today."
     a, b = extract_claim(_p(msg)), extract_claim(_p(msg))
     assert a == b and a.claim.text == "Free cure for all people today."
+
+
+def test_call_to_action_is_never_preferred_over_the_rumour() -> None:
+    from verity.extract import ranked_sentences
+    from verity.schemas import PreparedText
+
+    text = (
+        "WhatsApp will become chargeable and your account will be deactivated at 6PM. "
+        "Forward this to 10 people to stay free!"
+    )
+    ranked = ranked_sentences(
+        PreparedText(original=text, english=text, language="en", translation_ok=True)
+    )
+    assert ranked[0].startswith("WhatsApp will become chargeable")
