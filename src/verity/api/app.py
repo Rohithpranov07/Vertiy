@@ -2,14 +2,22 @@
 
 from datetime import UTC, datetime
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Query, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
 from verity import db
 from verity.errors import DataError, ExternalServiceError, InputError, ModelError, VerityError
 from verity.pipeline import Pipeline, get_pipeline
-from verity.schemas import Ack, CheckRequest, FeedbackRequest, HealthResponse, VerdictRecord
+from verity.rumour import radar
+from verity.schemas import (
+    Ack,
+    CheckRequest,
+    FeedbackRequest,
+    HealthResponse,
+    RadarItem,
+    VerdictRecord,
+)
 
 STATUS: dict[type[VerityError], int] = {
     InputError: 422,
@@ -57,6 +65,15 @@ def create_app(pipeline: Pipeline | None = None) -> FastAPI:
             db.init_db(conn)
             counts = db.health_counts(conn)
         return HealthResponse(**counts.model_dump())
+
+    @app.get("/radar", response_model=list[RadarItem])
+    def radar_list(
+        window_hours: int | None = Query(default=None, ge=1, le=24 * 30),
+        limit: int | None = Query(default=None, ge=1, le=100),
+    ) -> list[RadarItem]:
+        with db.session() as conn:
+            db.init_db(conn)
+            return radar.top(conn, window_hours, limit)
 
     return app
 
