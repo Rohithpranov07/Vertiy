@@ -1,2 +1,1 @@
-TODO: paste a widely debunked forward that contains a phone number (human-supplied).
-TODO: the fact-check it matches must already be in data/seed_factchecks.jsonl or the cache.
+URGENT! WhatsApp will become chargeable and your account will be deactivated at 6PM today. Forward this to 10 people to stay free! For help call 9876543210.

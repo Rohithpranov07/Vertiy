@@ -12,9 +12,11 @@ from verity.pipeline import Pipeline
 # SYNTHETIC FIXTURE: made-up demo messages written to a temp directory.
 
 
-def test_repo_demo_files_are_todo_placeholders() -> None:
+def test_repo_demo_messages_are_filled_and_have_expectations() -> None:
+    expected = demo.load_expected()
     for step in demo.FILES:
-        assert demo.load_message(step) is None  # nothing invented in the repository
+        assert demo.load_message(step)  # a real message, not a TODO placeholder
+        assert expected[str(step)]["verdict"] in {"likely_false", "unverified", "likely_true"}
 
 
 def test_load_message(tmp_path: Path) -> None:

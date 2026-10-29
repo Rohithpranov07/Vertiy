@@ -1,8 +1,7 @@
 {
-  "_note": "Fill in after supplying the real demo messages. 'TODO' values are not checked.",
-  "1": {"verdict": "TODO", "redactions": "TODO", "note": "debunked forward with a phone number"},
-  "2": {"verdict": "TODO", "note": "alarmist, no fact-check: expected Unverified with a what-if hint"},
-  "3": {"verdict": "TODO", "note": "must land in the same rumour family as step 1"},
-  "4": {"verdict": "TODO", "note": "lookalike warning and source_cred = low"},
-  "5": {"verdict": "TODO", "note": "Tamil message; shows the translated claim when a provider is configured"}
+  "1": {"verdict": "likely_false", "redactions": "PHONE", "note": "debunked forward with a phone number; the number is removed first"},
+  "2": {"verdict": "unverified", "note": "alarmist, no fact-check and no news report: tone alone cannot decide, so it abstains with a what-if hint"},
+  "3": {"verdict": "likely_false", "note": "edited copy of step 1; must land in the same rumour family"},
+  "4": {"verdict": "likely_false", "note": "look-alike of thehindu.com: source_cred = low and a link warning"},
+  "5": {"verdict": "likely_false", "note": "Tamil message matched to a published fact-check"}
 }
