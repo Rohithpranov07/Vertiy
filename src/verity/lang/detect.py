@@ -19,7 +19,7 @@ _ENGLISH_WORDS = frozenset(
     "not be said as than but or who which its their his her were been after before over into "
     "about during also more what when where how why against despite under between through while "
     "because since until upon without within among across could would should might these those "
-    "there them your our new says say".split()
+    "there them your our new says say in".split()
 )
 _SCRIPT_SHARE = 0.5  # share of letters in one script that decides the language
 
