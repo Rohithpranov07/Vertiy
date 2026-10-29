@@ -1,1 +1,17 @@
 domain,class,rationale
+thehindu.com,trusted,National daily with a published corrections policy. Demo selection; maintainer to review.
+indianexpress.com,trusted,National daily with a newsroom and corrections policy. Demo selection; maintainer to review.
+timesofindia.indiatimes.com,trusted,National daily. Demo selection; maintainer to review.
+economictimes.indiatimes.com,trusted,National business daily. Demo selection; maintainer to review.
+hindustantimes.com,trusted,National daily. Demo selection; maintainer to review.
+livemint.com,trusted,National business daily. Demo selection; maintainer to review.
+ndtv.com,trusted,National broadcaster. Demo selection; maintainer to review.
+pib.gov.in,trusted,Press Information Bureau of the Government of India (primary source for official announcements).
+bbc.co.uk,trusted,Public broadcaster (UK). Demo selection; maintainer to review.
+bbc.com,trusted,Public broadcaster (UK). Demo selection; maintainer to review.
+theguardian.com,trusted,National daily (UK) with a readers' editor. Demo selection; maintainer to review.
+aljazeera.com,trusted,International broadcaster. Demo selection; maintainer to review.
+who.int,trusted,World Health Organization (primary source for health guidance).
+nasa.gov,trusted,NASA (primary source for space claims).
+isro.gov.in,trusted,Indian Space Research Organisation (primary source).
+bbci.co.uk,trusted,BBC feed host (same organisation as bbc.co.uk). Demo selection; maintainer to review.

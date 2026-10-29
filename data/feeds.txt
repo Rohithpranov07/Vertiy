@@ -1,1 +1,18 @@
 # One trusted-outlet RSS/Atom feed URL per line (human-supplied). The feed domain must be trusted in `domains`.
+https://www.thehindu.com/news/national/feeder/default.rss
+https://www.thehindu.com/news/national/tamil-nadu/feeder/default.rss
+https://www.thehindu.com/sci-tech/health/feeder/default.rss
+https://www.thehindu.com/sci-tech/science/feeder/default.rss
+https://www.thehindu.com/business/Economy/feeder/default.rss
+https://www.thehindu.com/news/international/feeder/default.rss
+https://indianexpress.com/section/india/feed/
+https://timesofindia.indiatimes.com/rssfeedstopstories.cms
+https://economictimes.indiatimes.com/rssfeedstopstories.cms
+https://www.hindustantimes.com/feeds/rss/india-news/rssfeed.xml
+https://www.livemint.com/rss/news
+https://www.pib.gov.in/RssMain.aspx?ModId=6&Lang=1&Regid=3
+https://feeds.bbci.co.uk/news/world/asia/india/rss.xml
+https://feeds.bbci.co.uk/news/health/rss.xml
+https://feeds.bbci.co.uk/news/science_and_environment/rss.xml
+https://www.theguardian.com/world/india/rss
+https://www.aljazeera.com/xml/rss/all.xml
