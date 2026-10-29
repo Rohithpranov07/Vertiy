@@ -1,0 +1,91 @@
+{
+  "source": "expert-prior-v0",
+  "status": "AWAITING HUMAN REVIEW: initial expert guesses, not measured values",
+  "tables": {
+    "source_cred": {
+      "rationale": "Most forwarded messages carry no recognisable link; trusted and low sources are each a minority.",
+      "values": [
+        [
+          0.15
+        ],
+        [
+          0.7
+        ],
+        [
+          0.15
+        ]
+      ]
+    },
+    "claim_true": {
+      "rationale": "Trusted sources are usually right, low-credibility ones rarely; an unknown source is a coin flip before other evidence. Columns: trusted, unknown, low.",
+      "values": [
+        [
+          0.85,
+          0.5,
+          0.12
+        ],
+        [
+          0.15,
+          0.5,
+          0.88
+        ]
+      ]
+    },
+    "fact_check": {
+      "rationale": "A refuting fact-check is much more likely for false claims, a supporting one for true claims; most claims have no coverage. Columns: claim true, claim false.",
+      "values": [
+        [
+          0.03,
+          0.3
+        ],
+        [
+          0.22,
+          0.02
+        ],
+        [
+          0.75,
+          0.68
+        ]
+      ]
+    },
+    "corroboration": {
+      "rationale": "Trusted outlets report true claims more often than false ones, but absence is only weak evidence. Columns: claim true, claim false.",
+      "values": [
+        [
+          0.55,
+          0.15
+        ],
+        [
+          0.45,
+          0.85
+        ]
+      ]
+    },
+    "sensational": {
+      "rationale": "False claims read somewhat more alarmingly; this is a weak cue. Columns: claim true, claim false.",
+      "values": [
+        [
+          0.35,
+          0.55
+        ],
+        [
+          0.65,
+          0.45
+        ]
+      ]
+    },
+    "specifics": {
+      "rationale": "True claims somewhat more often carry checkable details; a weak cue. Columns: claim true, claim false.",
+      "values": [
+        [
+          0.6,
+          0.4
+        ],
+        [
+          0.4,
+          0.6
+        ]
+      ]
+    }
+  }
+}
