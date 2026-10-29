@@ -19,19 +19,19 @@ def test_normalise() -> None:
 
 
 def test_trusted_and_subdomain() -> None:
-    assert source_cred(claim("https://trusted.example/x"), None, lookup) == "trusted"
-    assert source_cred(claim("https://news.trusted.example/x"), None, lookup) == "trusted"
+    assert source_cred(claim("https://trusted.example/x"), None, [], lookup) == "trusted"
+    assert source_cred(claim("https://news.trusted.example/x"), None, [], lookup) == "trusted"
 
 
 def test_mixed_trusted_and_low_is_low() -> None:
     c = claim("https://trusted.example/x", "http://scam.example/y")
-    assert source_cred(c, None, lookup) == "low"
+    assert source_cred(c, None, [], lookup) == "low"
 
 
 def test_unlisted_and_no_link_unknown() -> None:
-    assert source_cred(claim("https://other.example"), None, lookup) == "unknown"
-    assert source_cred(claim(), None, lookup) == "unknown"
+    assert source_cred(claim("https://other.example"), None, [], lookup) == "unknown"
+    assert source_cred(claim(), None, [], lookup) == "unknown"
 
 
 def test_request_url_is_considered() -> None:
-    assert source_cred(claim(), "https://scam.example/z", lookup) == "low"
+    assert source_cred(claim(), "https://scam.example/z", [], lookup) == "low"

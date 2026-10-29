@@ -1,0 +1,10 @@
+# Public URL shorteners: the target is hidden, so source credibility stays unknown.
+bit.ly
+tinyurl.com
+t.co
+goo.gl
+is.gd
+ow.ly
+cutt.ly
+rb.gy
+buff.ly

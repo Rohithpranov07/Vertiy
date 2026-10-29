@@ -1,15 +1,17 @@
+import importlib
 import itertools
 from pathlib import Path
 
 import pytest
 
-from verity.cues import tone as tone_mod
 from verity.cues.specifics import specifics
 from verity.cues.train_tone import main as train_main
 from verity.cues.train_tone import train
 from verity.schemas import ClaimSignals
 
 # SYNTHETIC FIXTURE: made-up training messages.
+# `verity.cues.tone` the function shadows the module attribute, so load the module explicitly.
+tone_mod = importlib.import_module("verity.cues.tone")
 
 
 @pytest.mark.parametrize("combo", list(itertools.product([False, True], repeat=4)))
